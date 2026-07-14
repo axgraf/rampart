@@ -13,6 +13,8 @@ Furthermore, the small size of many pathogens mean that insightful sequence data
 RAMPART run concurrently with MinION sequencing of such pathogens.
 It provides a real-time overview of genome coverage and reference matching for each barcode.
 
+RAMPART supports both legacy Guppy and current Dorado FASTQ header formats. For workflows that have already been demultiplexed (e.g. using Dorado), the legacy Porechop demultiplexing step can optionally be skipped.
+
 RAMPART was originally designed to work with amplicon-based primer schemes (e.g. for [ebola](https://github.com/artic-network/primer-schemes)), but this isn't a requirement.
 
 

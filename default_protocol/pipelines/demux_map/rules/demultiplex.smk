@@ -12,26 +12,31 @@ rule demultiplex_porechop:
         barcode_option = barcode_set,
         limit_barcodes_to = limit_barcodes_to,
         threshold = "--barcode_threshold " + str(config["barcode_threshold"]),
-        diff = "--barcode_diff " + str(config["barcode_diff"])
+        diff = "--barcode_diff " + str(config["barcode_diff"]),
+        skip_porechop=skip_porechop_demultiplexing
     threads: config["threads"]
     output:
         temp(config["output_path"] + "/temp/{filename_stem}_demuxed.fastq")
     shell:
         """
-        porechop \
-        --verbosity 0 \
-        -i {input:q} \
-        -o {output:q} \
-        --threads {threads} \
-        --barcode_labels \
-        {params.threshold} \
-        {params.diff}\
-        {params.limit_barcodes_to}\
-        {params.require_two_barcodes}\
-        {params.discard_middle}\
-        {params.split_reads} \
-        {params.discard_unassigned}\
-        {params.barcode_option}
+        if [ "{params.skip_porechop}" = "True" ]; then
+            cp {input:q} {output:q}
+        else
+            porechop \
+            --verbosity 0 \
+            -i {input:q} \
+            -o {output:q} \
+            --threads {threads} \
+            --barcode_labels \
+            {params.threshold} \
+            {params.diff}\
+            {params.limit_barcodes_to}\
+            {params.require_two_barcodes}\
+            {params.discard_middle}\
+            {params.split_reads} \
+            {params.discard_unassigned}\
+            {params.barcode_option}
+        fi
         """
 
 

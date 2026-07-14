@@ -1,20 +1,25 @@
 # demux & map & report
 
-A snakemake pipeline that takes in basecalled fastq files, demultiplexes them using ``porechop`` and maps them against a reference panel in fasta format using ``minimap2``. It then parses the barcode and mapping information and produces a csv report.
-
+A snakemake pipeline that takes basecalled FASTQ files, optionally demultiplexes them using `Porechop`, and maps them against a reference panel in FASTA format using `minimap2`. It then parses the barcode and mapping information and produces a CSV report.
 ### Header annotations 
 
-The parse_paf.py script reads in barcode and start_time information from the header. 
+The `parse_paf.py` script reads barcode and `start_time` information from the FASTQ header.
 
-e.g.
+Both legacy Guppy (`key=value`) and Dorado (`key:type:value`) FASTQ header formats are supported.
+
+Legacy Guppy example:
+
+```text
+@6d3d6bff-4c48-4b5c-8fc9-bc0765e27016 runid=b10b0df343a0c44bc8f661f2cfbe235fce1fbedc sampleid=seq_run read=58437 ch=444 start_time=2019-05-29T20:48:48Z barcode=NB01
 ```
-@6d3d6bff-4c48-4b5c-8fc9-bc0765e27016 runid=b10b0df343a0c44bc8f661f2cfbe235fce1fbedc \
-sampleid=seq_run read=58437 ch=444 start_time=2019-05-29T20:48:48Z \
-barcode=NB01 
-AGTTACTAAGGTTAACACTGCAGTGAACCTCCTCTTGACACCTCTCTCATTGTGTCATCAACCTGTTTGTCGTCTGCCCACAC
-+
-$)''$'(%+38>?6'$*(&'&'&1(&%''(&,&+%%+,,-22131545230/)(%+&&-$&.-+)%&'&&$*421(&&&%&11
+
+Dorado example:
+
+```text
+@558310e2-ccf6-40c4-91ef-cc14da23aab2 qs:f:22.363989 ch:i:1800 rn:i:24 st:Z:2026-07-13T17:12:22.006627+02:00 SM:Z:barcode10 al:Z:barcode10
 ```
+
+For Dorado headers, `st` is interpreted as `start_time`, while `SM` and `al` are used as barcode fields.
 
 ### CSV return format
 
@@ -64,5 +69,13 @@ limit_barcodes=True \
 barcode_threshold=80 \
 barcode_diff=5
 ```
+
+When using FASTQ files that have already been demultiplexed (for example by Dorado), Porechop can be skipped by setting:
+
+```text
+skip_porechop_demultiplexing=True
+```
+
+In this mode, FASTQ files are passed directly to the mapping step without additional demultiplexing.
 
 If you wish to provide your own config file, it can be in yaml or json format.

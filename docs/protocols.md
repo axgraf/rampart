@@ -170,7 +170,7 @@ The default pipeline will watch for new `.fastq` files appearing in the `basecal
 
 For **de-multiplexing**, The `annotation` pipeline currently uses a customised version of `porechop` that was installed by `conda` when RAMPART was installed. `porechop` is an adapter trimming and demultiplexing package written by Ryan Wick. It's original source can be found at [https://github.com/rrwick/Porechop](https://github.com/rrwick/Porechop). For RAMPART we have modified it to focus on demultiplexing, making it faster. The forked, modified version can be found at [https://github.com/artic-network/Porechop](https://github.com/artic-network/Porechop).
 
-If demuxing has been done by guppy, then the **de-multiplexing** step is skipped.
+If demultiplexing has already been performed upstream, for example by Guppy or Dorado, the **de-multiplexing** step can be skipped by setting `skip_porechop_demultiplexing` to `true`.
 
 **Reference mapping** is done using `minimap2` ([https://minimap2.org]()). This step requires a `FASTA` file containing at least one reference genome (or sub-genomic region if that is being targetted). The choice of reference sequences will depend on aim of the sequencing task. The reference genome panel could span a range of genotypes or completely different viruses if a metagenomic protocol is being used. The relatively high per-read error rate will probably mean that very close variants cannot be easily distinguished at this stage. 
 
@@ -194,6 +194,9 @@ If demuxing has been performed by guppy, then these options have no effect!
 - `discard_unassigned` (default false)
   > With this option on, any reads that are not reliably assigned a barcode (because it fails one of the above criteria) are not processed further and will not appear in RAMPART. By default these reads are processed and will appear in a category called 'unassigned'. 
 
+- `skip_porechop_demultiplexing` (default false)
+  > When true, the Porechop demultiplexing step is skipped. Use this option when FASTQ files have already been demultiplexed upstream, for example by Dorado.
+
 - `barcode_set [native | rapid | pcr | all]` (default native)
   > Specify which set of barcodes you are using. The `rapid` barcode set only uses a barcode at one end so `require_two_barcodes` should also be set to false when using these.
 
@@ -205,7 +208,8 @@ In `protocol.json` or `run_configuration.json` you can sepecify the annotation p
 annotationOptions: {
   "require_two_barcodes": "false",
   "barcode_set": "rapid",
-  "limit_barcodes_to": "BC04,BC05"
+  "limit_barcodes_to": "BC04,BC05",
+  "skip_porechop_demultiplexing": "true"
 }
 ```
 
@@ -213,7 +217,7 @@ On the command line these options can be specified using the `--annotationOption
 `<option>=<value>` --- with no spaces. More than one such option pair can be provided with spaces between them. For example:
 
 ```json
---annotationOptions require_two_barcodes=false barcode_set=rapid limit_barcodes_to=BC04,BC05
+--annotationOptions require_two_barcodes=false barcode_set=rapid limit_barcodes_to=BC04,BC05 skip_porechop_demultiplexing=true
 ```
 
 ---
