@@ -50,7 +50,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "NODE_OPTIONS=--openssl-legacy-provider react-scripts build",
     "server": "node src/server.js",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
